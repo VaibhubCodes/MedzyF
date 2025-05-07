@@ -3,17 +3,23 @@ from .models import User, Address, Referral
 from settings.models import Conversions  # Import Conversions
 
 class UserSerializer(serializers.ModelSerializer):
-    referral_code = serializers.CharField(write_only=True, required=False)
+    referral_code = serializers.CharField(write_only=True, required=False, allow_blank=True)
     password = serializers.CharField(write_only=True, required=True)
-    profile_photo = serializers.ImageField(required=False)  # Add profile photo field
-    
+    profile_photo = serializers.ImageField(required=False)
+    selected_address_id = serializers.SerializerMethodField()  # ✅
+
     class Meta:
         model = User
         fields = [
             'id', 'username', 'name', 'email', 'phone_number', 'wallet_balance',
-            'reward_points', 'referral_code', 'password', 'profile_photo'
+            'reward_points', 'referral_code', 'password', 'profile_photo', 'selected_address_id'  # ✅
         ]
-        read_only_fields = ['username', 'wallet_balance', 'reward_points']
+        read_only_fields = ['username', 'wallet_balance', 'reward_points', 'selected_address_id']
+
+    def get_selected_address_id(self, obj):
+        default_address = obj.addresses.first()  # or add logic to mark one as selected
+        return default_address.id if default_address else None
+
 
     def create(self, validated_data):
         referral_code = validated_data.pop('referral_code', None)
@@ -52,31 +58,21 @@ class UserSerializer(serializers.ModelSerializer):
         
         return user
     def update(self, instance, validated_data):
-        # Update name and phone_number only
-        instance.name = validated_data.get('name', instance.name)
-        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
-        
-        instance.save()
-        return instance
-
-    def update(self, instance, validated_data):
         # Handle password update
         if 'password' in validated_data:
             instance.set_password(validated_data.pop('password'))
 
-        # Update profile photo if provided
+        # Handle profile photo
         profile_photo = validated_data.pop('profile_photo', None)
         if profile_photo:
             instance.profile_photo = profile_photo
 
-        # Update other fields
+        # Update basic fields (name, phone_number, etc.)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-        
+
         instance.save()
         return instance
-
-
 
 
 class AddressSerializer(serializers.ModelSerializer):
