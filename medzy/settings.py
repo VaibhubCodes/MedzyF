@@ -30,7 +30,7 @@ BASE_BACKEND_URL = 'http://13.218.219.87'  # ✅ your EC2 IP or domain
 # Security settings
 SECRET_KEY = os.getenv("SECRET_KEY", 'django-insecure-default-key')  # Use environment variable for production
 DEBUG = os.getenv("DEBUG", "True") == "True"  # Set to False in production
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['13.218.219.87', 'localhost', '127.0.0.1']
 
 
 # Installed apps
