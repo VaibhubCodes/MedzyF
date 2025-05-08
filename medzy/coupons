@@ -1,0 +1,12 @@
+<script>start("/Users/abhivyaduvanshi/MedzyLive/medzy/coupons/");</script>
+<script>onHasParentDirectory();</script>
+<script>addRow("__pycache__","__pycache__",1,416,"416 B",1729871211,"25/10/2024, 21:16:51");</script>
+<script>addRow("migrations","migrations",1,192,"192 B",1729705394,"23/10/2024, 23:13:14");</script>
+<script>addRow("__init__.py","__init__.py",0,0,"0 B",1728565773,"10/10/2024, 18:39:33");</script>
+<script>addRow("admin.py","admin.py",0,497,"497 B",1729705302,"23/10/2024, 23:11:42");</script>
+<script>addRow("apps.py","apps.py",0,146,"146 B",1728565773,"10/10/2024, 18:39:33");</script>
+<script>addRow("models.py","models.py",0,1606,"1.6 kB",1729705292,"23/10/2024, 23:11:32");</script>
+<script>addRow("serializers.py","serializers.py",0,266,"266 B",1729704988,"23/10/2024, 23:06:28");</script>
+<script>addRow("tests.py","tests.py",0,60,"60 B",1728565773,"10/10/2024, 18:39:33");</script>
+<script>addRow("urls.py","urls.py",0,274,"274 B",1729705009,"23/10/2024, 23:06:49");</script>
+<script>addRow("views.py","views.py",0,1232,"1.2 kB",1729871210,"25/10/2024, 21:16:50");</script>
