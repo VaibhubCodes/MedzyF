@@ -1,6 +1,12 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+from decouple import config
+
+SECRET_KEY = config('SECRET_KEY')
+OPENAI_API_KEY = config('OPENAI_API_KEY')
+DEBUG = config('DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
 
 # Base directory path
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -68,7 +74,7 @@ REST_FRAMEWORK = {
     
 }
 
-OPENAI_API_KEY = "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"
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
