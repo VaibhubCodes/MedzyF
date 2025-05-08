@@ -19,6 +19,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:3000',
     'http://10.0.2.2:3000',   # For Android emulator access to local server
 ]
+BASE_BACKEND_URL = 'http://13.218.219.87'  # ✅ your EC2 IP or domain
 
 # Security settings
 SECRET_KEY = os.getenv("SECRET_KEY", 'django-insecure-default-key')  # Use environment variable for production
