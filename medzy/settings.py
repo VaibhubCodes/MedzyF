@@ -1,39 +1,23 @@
 import os
 from pathlib import Path
 from datetime import timedelta
-from decouple import config
+from decouple import config, Csv
 
-SECRET_KEY = config('SECRET_KEY')
-OPENAI_API_KEY = config('OPENAI_API_KEY')
-DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
-
-# Base directory path
+# Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Media files
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# ENV-based settings
+SECRET_KEY = config('SECRET_KEY')
+DEBUG = config('DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+OPENAI_API_KEY = config('OPENAI_API_KEY')
+RAZORPAY_API_KEY = config('RAZORPAY_API_KEY')
+RAZORPAY_API_SECRET = config('RAZORPAY_API_SECRET')
+ONESIGNAL_APP_ID = config('ONESIGNAL_APP_ID')
+ONESIGNAL_API_KEY = config('ONESIGNAL_API_KEY')
+BASE_BACKEND_URL = config('BASE_BACKEND_URL', default='http://localhost:8000')
 
-# Static files
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-
-# CORS
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',  # React app development server
-    'http://127.0.0.1:3000',
-    'http://10.0.2.2:3000',   # For Android emulator access to local server
-]
-BASE_BACKEND_URL = 'http://13.218.219.87'  # ✅ your EC2 IP or domain
-
-# Security settings
-SECRET_KEY = os.getenv("SECRET_KEY", 'django-insecure-default-key')  # Use environment variable for production
-DEBUG = os.getenv("DEBUG", "True") == "True"  # Set to False in production
-ALLOWED_HOSTS = ['13.218.219.87', 'localhost', '127.0.0.1']
-
-
-# Installed apps
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -46,9 +30,12 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
+    'dal',
+    'dal_select2',
 
-    # Custom apps
+    # Your apps
     'users',
     'products',
     'orders',
@@ -57,70 +44,10 @@ INSTALLED_APPS = [
     'notifications',
     'ai_assistant',
     'settings',
-    'rest_framework_simplejwt.token_blacklist',
-    # Optional: Add-ons
-    'dal',  # django-autocomplete-light
-    'dal_select2',
 ]
 
-# REST framework settings
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-    
-}
-
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
-    },
-}
-
-# JWT settings
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=150),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-}
-
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# Password validation
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-]
-
-# Middleware
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Handle CORS
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -132,11 +59,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'medzy.urls'
 
-# Templates
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # Optional custom template directory
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -149,11 +75,24 @@ TEMPLATES = [
     },
 ]
 
-# WSGI application
 WSGI_APPLICATION = 'medzy.wsgi.application'
-
-# Custom User model
 AUTH_USER_MODEL = 'users.User'
+
+# Database
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+# Password validators
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+]
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
@@ -161,14 +100,55 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Razorpay API credentials (use environment variables in production)
-RAZORPAY_API_KEY = os.getenv("RAZORPAY_API_KEY", 'rzp_test_GY4iJFc1dQJzvQ')
-RAZORPAY_API_SECRET = os.getenv("RAZORPAY_API_SECRET", 'Jwb2JZb3lsJnzrCUROE92mF8')
+# Static & Media
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-# OneSignal credentials
-ONESIGNAL_APP_ID = os.getenv("ONESIGNAL_APP_ID", 'a86e1582-24f8-4aeb-b12d-fe50369d3284')
-ONESIGNAL_API_KEY = os.getenv("ONESIGNAL_API_KEY", 'NmI2MTg3YzQtYjdlYy00MDQ0LTgyN2QtZWU1ZWQ4NmQwZDBh')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
+# JWT Configuration
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=150),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+}
+
+# CORS
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://10.0.2.2:3000',
+    f"{BASE_BACKEND_URL}",
+]
+
+# Logging (Optional but helpful)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler'},
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
