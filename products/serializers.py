@@ -3,6 +3,19 @@ import json
 from rest_framework import serializers
 from .models import Category, SubCategory, Brand, Product, ProductAttribute
 
+from rest_framework import serializers
+from django.conf import settings
+from .models import Product  # or your actual model
+
+# ✅ Custom Image Field
+class AbsoluteImageField(serializers.ImageField):
+    def to_representation(self, value):
+        url = super().to_representation(value)
+        request = self.context.get('request', None)
+        if request is not None:
+            return request.build_absolute_uri(url)
+        return f"{settings.BASE_BACKEND_URL}{url}"
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -30,7 +43,7 @@ class ProductSerializer(serializers.ModelSerializer):
     subcategory_name = serializers.CharField(source='subcategory.name', read_only=True)
     brand_name = serializers.CharField(source='brand.name', read_only=True)
     brand_id = serializers.IntegerField(source='brand.id', read_only=True)
-    image = serializers.SerializerMethodField()
+    image = AbsoluteImageField()
     class Meta:
         model = Product
         fields = [
