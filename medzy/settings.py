@@ -23,7 +23,7 @@ CORS_ALLOWED_ORIGINS = [
 # Security settings
 SECRET_KEY = os.getenv("SECRET_KEY", 'django-insecure-default-key')  # Use environment variable for production
 DEBUG = os.getenv("DEBUG", "True") == "True"  # Set to False in production
-ALLOWED_HOSTS = ['127.0.0.1', '10.0.2.2', 'localhost']  # Add domains as required
+ALLOWED_HOSTS = ['127.0.0.1', '10.0.2.2', 'localhost','13.218.219.87']  # Add domains as required
 
 # Installed apps
 INSTALLED_APPS = [
