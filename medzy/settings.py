@@ -137,6 +137,7 @@ SIMPLE_JWT = {
 
 # CORS
 CORS_ALLOWED_ORIGINS = [
+    'http://medzybucket.s3-website-us-east-1.amazonaws.com',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'http://10.0.2.2:3000',
